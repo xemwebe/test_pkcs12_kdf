@@ -98,10 +98,10 @@ fn main() -> Result<()> {
     let salt = [0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8];
     let id = 3;
     let iter = 100;
-    let keylen = 40;
+    let keylen = 28;
     let key1 = key_gen_utf8(pass, &salt, id, iter, keylen)?;
     let key2 = key_gen_rs(pass, &salt, id, iter, keylen)?;
-
+ 
     println!("Generated key1: {}", hex::encode(&key1));
     println!("Generated key2: {}", hex::encode(&key2));
 
