@@ -51,18 +51,45 @@ pub fn key_gen_rs(
         i_tmp[i] = pass_uni[(i-slen)%pass_uni.len()];
     }
     println!("I = {}", hex::encode(i_tmp.clone()));
-    let mut hasher = Sha256::new();
     let d_tmp = vec![id as u8; v];
-    hasher.update(&d_tmp);
-    hasher.update(&i_tmp);
-    let mut result = hasher.finalize();
-    for i in 1..iter {
+    let mut m = keylen as usize;
+    let mut n = 0;
+    let mut out = vec![0u8; keylen as usize];
+    loop {
         let mut hasher = Sha256::new();
-        hasher.update(&result[0..u]);
-        result = hasher.finalize();
+        hasher.update(&d_tmp);
+        hasher.update(&i_tmp);
+        let mut result = hasher.finalize();
+        for _ in 1..iter {
+            let mut hasher = Sha256::new();
+            hasher.update(&result[0..u]);
+            result = hasher.finalize();
+        }
+        let min_mu = m.min(u);
+        out[n..n+min_mu].copy_from_slice(&result[0..min_mu]);
+        n += min_mu;
+        m -= min_mu;
+        if m <= 0 {
+            break;
+        }
+        let mut b_tmp = vec![0u8; v];
+        for j in 0..v {
+            b_tmp[j] = result[j%u];
+        }
+        let mut j=0;
+        while j<ilen {
+            let mut c = 1_u16;
+            let mut k: i64 = v as i64 -1;
+            while k>=0 {
+                c += i_tmp[k as usize +j] as u16 + b_tmp[k as usize] as u16;
+                i_tmp[j+k as usize] = (c&0x00ff) as  u8;
+                c >>= 8;
+                k -= 1;
+            }
+            j += v;
+        }
     }
-    let m = (keylen as usize).min(u) as usize;
-    Ok(result[0..m].to_vec())
+    Ok(out)
 }
 
 
