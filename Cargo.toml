@@ -1,5 +1,5 @@
 [package]
-name = "pkcs12_kdf"
+name = "test_pkcs12_kdf"
 version = "0.1.0"
 edition = "2021"
 
