@@ -11,6 +11,8 @@ cxx = "1.0.100"
 encode_unicode = "1.0.0"
 hex = "0.4.3"
 sha2 = "0.10.7"
+pkcs12 = { git="https://github.com/xemwebe/formats.git", branch="pkcs12_kdf", features=["alloc"] }
+whirlpool = "0.10.4"
 
 [build-dependencies]
 cxx-build = "1.0"

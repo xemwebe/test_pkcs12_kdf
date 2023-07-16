@@ -19,7 +19,8 @@ namespace pkcs12 {
         rust::Slice<const rust::u8> salt,
         int id,
         int iter,
-        int keylen
+        long unsigned int keylen,
+        int algo
     ) {
         int max_int = std::numeric_limits<int>::max();
         if(pass.size()>static_cast<size_t>(max_int)
@@ -28,11 +29,27 @@ namespace pkcs12 {
             throw std::runtime_error("key gen failed: value out of bound");
         }
         std::vector<unsigned char> out(keylen);
-
-        int result = PKCS12_key_gen_utf8(
-            pass.data(), pass.size(),
-            (unsigned char *)(salt.data()), salt.size(),
-            id, iter, keylen, out.data(), EVP_sha256());
+        
+        int result = -99;
+        if (algo==1) {
+            result = PKCS12_key_gen_utf8(
+                pass.data(), pass.size(),
+                (unsigned char *)(salt.data()), salt.size(),
+                id, iter, keylen, out.data(), EVP_sha256());
+        } else if(algo==2) {
+            result = PKCS12_key_gen_utf8(
+                pass.data(), pass.size(),
+                (unsigned char *)(salt.data()), salt.size(),
+                id, iter, keylen, out.data(), EVP_sha512());
+        } else if(algo==3) {
+            result = PKCS12_key_gen_utf8(
+                pass.data(), pass.size(),
+                (unsigned char *)(salt.data()), salt.size(),
+                id, iter, keylen, out.data(), EVP_whirlpool());
+        }
+        if (result==-99) {
+            throw std::runtime_error("unsupported algorithm");
+        }
         if(result==0) {
             throw std::runtime_error("key gen failed, call to openssl returns with error");
         }

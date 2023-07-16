@@ -7,7 +7,8 @@ namespace pkcs12 {
         rust::Slice<const rust::u8> salt,
         int id,
         int iter,
-        int keylen
+        long unsigned int keylen,
+        int algo
     );
 }
 
