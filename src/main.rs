@@ -1,8 +1,5 @@
 use anyhow::Result;
-use hex;
 use pkcs12::kdf::{derive_key, Pkcs12KeyType};
-use sha2;
-use whirlpool;
 
 #[cxx::bridge(namespace = "pkcs12")]
 mod ffi {
